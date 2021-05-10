@@ -1,0 +1,75 @@
+---
+title: "Poster Eda"
+output: html_notebook
+---
+
+#packages and data
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(readr)
+
+
+eff_dat <- read_csv("data/eff_dat.csv")
+```
+
+#skim data
+
+```{r}
+
+skim(eff_dat)
+```
+
+#make similarites and com_sci_gender factors 
+
+```{r}
+eff_dat<-eff_dat %>%
+  mutate(comp_sci_gender= fct_lump(comp_sci_gender, n = 2),
+         similarities=fct_lump(similarities, n = 2))
+
+
+```
+
+```{r}
+
+
+draw_dat <- read_csv("data/draw_dat.csv", 
+    col_types = cols(child_gender = col_factor(levels = c("F", 
+        "M")), comp_sci_gender = col_factor(levels = c("F", 
+        "M")), similarities = col_factor(levels = c("No", 
+        "Yes")), similarities_are_code_1 = col_factor(levels = c("0", 
+        "1"))))
+View(draw_dat)
+
+```
+
+```{r}
+
+
+draw_dat%>%
+  drop_na(child_gender,comp_sci_gender)%>%
+  group_by(child_gender,comp_sci_gender)%>%
+  tally()
+
+```
+
+```{r}
+
+
+draw_dat%>%
+  drop_na(child_gender,comp_sci_gender,similarities)%>%
+  ggplot() +
+  facet_wrap(~child_gender) +
+  geom_histogram(aes(comp_sci_gender, fill = similarities),stat="count",position = "dodge2")
+
+
+draw_dat%>%
+  drop_na(child_gender,comp_sci_gender,similarities)%>%
+  ggplot() +
+  facet_wrap(~child_gender) +
+  geom_histogram(aes(comp_sci_gender),stat="count",position = "dodge2")
+
+```
+
